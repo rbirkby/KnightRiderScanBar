@@ -21,18 +21,14 @@ void setup() {
   strip.show();
 }
 
-void loop() {
-  kittScanBar();
-}
-
-void kittScanBar() {
+void scanBar(uint32_t (*getColor)(byte)) {
   int tail = 7;
 
   for(int i=0; i<(int)strip.numPixels()+tail; i++) {
     for(int j=0; j<=i; j++) {
       int diff = min(tail, abs(j-i));
       int brightness = (128 >> diff) - 1;
-      strip.setPixelColor(min(strip.numPixels()-1, j), strip.Color(brightness,0,0));
+      strip.setPixelColor(min(strip.numPixels()-1, j), getColor(brightness));
     }
     
     strip.show();
@@ -43,10 +39,28 @@ void kittScanBar() {
     for(int j=strip.numPixels()-1; j>=i; j--) {
       int diff = min(tail, abs(j-i));
       int brightness = (128 >> diff) - 1;
-      strip.setPixelColor(max(0, j), strip.Color(brightness,0,0));
+      strip.setPixelColor(max(0, j), getColor(brightness));
     }
     
     strip.show();
     delay(20);
   }
 }
+
+void loop() {
+  for(int i = 0; i<3; i++) {
+    scanBar(&kitt);
+  }
+  for(int i = 0; i<3; i++) {
+    scanBar(&karr);
+  }
+}
+
+uint32_t kitt(byte brightness) {
+  return strip.Color(brightness, 0, 0);
+}
+
+uint32_t karr(byte brightness) {
+  return strip.Color(brightness, brightness*0.4, 0);
+}
+
